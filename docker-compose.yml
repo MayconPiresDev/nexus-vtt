@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: nexus_db
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: nexus_admin
+      POSTGRES_PASSWORD: nexus_password
+      POSTGRES_DB: nexus_vtt_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
