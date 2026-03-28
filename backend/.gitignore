@@ -33,7 +33,7 @@ out/
 # Editores de Código e SO
 # ========================
 .vscode/
-.idea/
+../.idea
 .DS_Store
 Thumbs.db
 /generated/prisma
