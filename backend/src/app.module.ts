@@ -8,9 +8,31 @@ import { CharactersModule } from './characters/characters.module';
 import { CampaignsModule } from './campaigns/campaigns.module';
 import { ApplicationsModule } from './applications/applications.module';
 
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, CharactersModule, CampaignsModule, ApplicationsModule],
+  imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 100,
+      },
+    ]),
+    PrismaModule,
+    UsersModule,
+    AuthModule,
+    CharactersModule,
+    CampaignsModule,
+    ApplicationsModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

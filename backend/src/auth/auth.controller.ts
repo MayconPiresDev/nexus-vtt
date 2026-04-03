@@ -1,22 +1,33 @@
-import { Controller, Post, Body, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UnauthorizedException,
+  HttpStatus,
+  HttpCode,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOperation, ApiTags, ApiResponse } from '@nestjs/swagger';
-import { LoginDto } from "./dto/login/login.dto";
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { LoginDto } from './dto/login/login.dto';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {}
 
-    @Post('login')
-    @ApiOperation({ summary: 'Realizar login e obter token JWT' })
-    @ApiResponse({ status: 200, description: 'Login realizado com sucesso.' })
-    @ApiResponse({ status: 401, description: 'Credenciais inválidas.' })
-    async login(@Body() loginDto: LoginDto) { // Trocamos any por LoginDto
-        const user = await this.authService.validateUser(loginDto.email, loginDto.password);
-        if (!user) {
-            throw new UnauthorizedException('Credenciais inválidas');
-        }
-        return this.authService.login(user);
+  @Throttle({ default: { limit: 5, ttl: 60000 } })
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Fazer login e obter o Token JWT' })
+  async login(@Body() loginDto: LoginDto) {
+    const user = await this.authService.validateUser(
+      loginDto.email,
+      loginDto.password,
+    );
+    if (!user) {
+      throw new UnauthorizedException('Credenciais inválidas');
     }
+    return this.authService.login(user);
+  }
 }

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
   UseGuards,
   ForbiddenException,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { UpdateCampaignDto } from './dto/update-campaign.dto';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { PaginationQueryDto } from './dto/pagination-query.dto';
 
 @ApiTags('campaigns')
 @ApiBearerAuth()
@@ -41,10 +43,18 @@ export class CampaignsController {
 
   @Get()
   @ApiOperation({
-    summary: 'Listar campanhas (Mestre vê as suas, Jogador vê as abertas)',
+    summary: 'Listar campanhas (com paginação)',
   })
-  findAll(@CurrentUser() user: any) {
-    return this.campaignsService.findAll(user.userId, user.role);
+  findAll(
+    @CurrentUser() user: any,
+    @Query() paginationQuery: PaginationQueryDto,
+  ) {
+    return this.campaignsService.findAll(
+      user.userId,
+      user.role,
+      paginationQuery.page ?? 1,
+      paginationQuery.limit ?? 10,
+    );
   }
 
   @Get(':id')
