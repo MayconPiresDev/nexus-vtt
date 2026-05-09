@@ -69,6 +69,8 @@ model Character {
   wisdom       Int
   charisma     Int
 
+  avatarUrl String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -86,6 +88,8 @@ model Campaign {
   description String          @db.Text
   status      CampaignStatus  @default(OPEN)
   minimumExp  ExperienceLevel @default(NOVATO)
+
+  bannerUrl String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

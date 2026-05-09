@@ -63,4 +63,25 @@ export class DicerollerGateway
 
     this.server.to(data.campaignId).emit('diceRolled', payload);
   }
+
+  @SubscribeMessage('sendMessage')
+  handleSendMessage(
+    @MessageBody()
+    data: {
+      campaignId: string;
+      playerName: string;
+      message: string;
+      isWhisperToMaster?: boolean;
+    },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const payload = {
+      player: data.playerName,
+      message: data.message,
+      isWhisper: data.isWhisperToMaster || false,
+      timestamp: new Date().toISOString(),
+    };
+
+    this.server.to(data.campaignId).emit('newMessage', payload);
+  }
 }

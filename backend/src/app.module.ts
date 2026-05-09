@@ -12,8 +12,15 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { DicerollerModule } from './diceroller/diceroller.module';
 
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/public',
+    }),
     ThrottlerModule.forRoot([
       {
         ttl: 60000,
