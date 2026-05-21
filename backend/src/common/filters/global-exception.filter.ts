@@ -8,7 +8,7 @@ import {
 import { Response } from 'express';
 import { Prisma } from '@prisma/client';
 
-@Catch() // O parêntesis vazio significa: "Apanha TODOS os erros que acontecerem na API"
+@Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -25,12 +25,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     // 2. Se for um erro do Prisma (Base de Dados)
     else if (exception instanceof Prisma.PrismaClientKnownRequestError) {
       switch (exception.code) {
-        case 'P2002': // Erro de campo único (Unique Constraint)
+        case 'P2002':
           status = HttpStatus.CONFLICT;
           message =
             'Já existe um registo com estes dados únicos no sistema (ex: e-mail já em uso).';
           break;
-        case 'P2025': // Registo não encontrado ao tentar atualizar/apagar
+        case 'P2025':
           status = HttpStatus.NOT_FOUND;
           message = 'O registo que tentou alterar ou apagar não existe.';
           break;
